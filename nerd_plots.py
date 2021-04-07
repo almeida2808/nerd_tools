@@ -2,6 +2,7 @@ import random
 
 import pandas as pd
 import seaborn as sns
+import statsmodels.stats.api as sms
 
 from matplotlib import pyplot as plt
 
@@ -10,6 +11,9 @@ def aspect_ratio_locker(aspect_ratio, multiplier):
     Creates an easy tool to manipulate figure size inside a fixed aspect ratio
     """
     return([i * multiplier for i in aspect_ratio])
+
+def confint_error(x):
+    return sms.DescrStatsW(x).tconfint_mean()[1] - x.mean()
 
 def fancy_hboxplot(
     x,
@@ -76,7 +80,8 @@ def fancy_hboxplot(
 
         for index, x_value in enumerate(data[x].unique()):
             if row[x] == x_value:
-                p.plot(index + x_jitter, y_coord, 'ro', color='navy', alpha=0.2)
+                if add_mean == True:
+                    p.plot(index + x_jitter, y_coord, 'ro', color='navy', alpha=0.2)
                 p.plot(index, data[data[x] == x_value][y].mean(), "D", color="darkblue", markersize=9)
 
     if midpoint_line != "":
@@ -150,11 +155,58 @@ def fancy_vboxplot(
 
         for index, y_value in enumerate(data[y].unique()):
             if row[y] == y_value:
-                p.plot(x_coord, index + y_jitter, 'ro', color='navy', alpha=0.2)
+                if add_mean == True:
+                    p.plot(x_coord, index + y_jitter, 'ro', color='navy', alpha=0.2)
                 p.plot(data[data[y] == y_value][x].mean(), index, "D", color="darkblue", markersize=9)
 
     if midpoint_line != "":
         p.axvline(midpoint_line, linestyle='--', color='navy', alpha=.5)
+
+    if output_path != "":
+        p.get_figure().savefig(output_path, bbox_inches="tight", dpi=600)
+
+def tiefighterplot(
+    x,
+    y,
+    data,
+    midpoint_line='',
+    title="",
+    y_label="",
+    x_label="",
+    size = 0.4,
+    aspect_ratio = [16, 9],
+    output_path="",
+):
+    """
+    Creates a vertical tiefighter plot (cat on Y axis) with a 95% CI as error bars.
+    """
+
+    plt.figure(figsize=aspect_ratio_locker(aspect_ratio, size), dpi = 600)
+
+    new_data = data.groupby(y)[x].agg(['mean', 'size', confint_error]).reset_index()
+    new_data["condition_name"] = new_data.apply(lambda x: x[y] + " (n = " + str(x["size"]) + ")", axis=1)
+    new_data.sort_values("mean", ascending=False, inplace=True)
+
+    p = sns.pointplot(
+        x="mean",
+        y="condition_name",
+        data=new_data,
+        ci=None,
+        linestyles="",
+        scale=0.5
+        )
+
+    p.set_title(title)
+    p.set_ylabel(y_label)
+    p.set_xlabel(x_label)
+
+    p.spines["top"].set_visible(False)
+    p.spines["right"].set_visible(False)
+
+    if midpoint_line != '':
+        p.axvline(x=midpoint_line, linestyle='--', alpha=.7)
+
+    plt.errorbar(new_data['mean'], new_data['condition_name'], xerr=new_data['confint_error'], fmt='.', capsize=7)
 
     if output_path != "":
         p.get_figure().savefig(output_path, bbox_inches="tight", dpi=600)
