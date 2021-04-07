@@ -1,0 +1,160 @@
+import random
+
+import pandas as pd
+import seaborn as sns
+
+from matplotlib import pyplot as plt
+
+def aspect_ratio_locker(aspect_ratio, multiplier):
+    """
+    Creates an easy tool to manipulate figure size inside a fixed aspect ratio
+    """
+    return([i * multiplier for i in aspect_ratio])
+
+def fancy_hboxplot(
+    x,
+    y,
+    data,
+    likert_limits=[],
+    midpoint_line='',
+    add_mean=True,
+    title="",
+    y_label="",
+    x_label="",
+    x_jitter_param=0.1,
+    y_jitter_param=0.08,
+    label_rotation=90,
+    size = 0.4,
+    aspect_ratio = [16, 9],
+    output_path="",
+):
+    """
+    Creates an horizontal boxplot (cat on X axis) with a jittered overlay for each datapoint.
+    Options for enforcing likert scale limits and for adding a diamond representing the mean.
+    """
+
+    plt.figure(figsize=aspect_ratio_locker(aspect_ratio, size), dpi = 600)
+
+    # defines the order
+    order = data.groupby(x)[y].mean().reset_index()
+    order.columns = [x, "agg" + y]
+
+    data = pd.merge(data, order, on=x)
+
+    data.sort_values("agg" + y, ascending=False, inplace=True)
+
+    # draws the basic plot
+    p = sns.boxplot(
+        x=x,
+        y=y,
+        data=data,
+        color="skyblue",
+        fliersize=0
+        )
+
+    p.spines["top"].set_visible(False)
+    p.spines["right"].set_visible(False)
+
+    p.set_xlabel(x_label)
+    p.set_ylabel(y_label)
+    p.set_title(title)
+
+    for tick in p.get_xticklabels():
+        tick.set_rotation(label_rotation)
+
+    for i, row in data.iterrows():
+        x_jitter = random.gauss(0,x_jitter_param)
+        y_jitter = random.gauss(0,y_jitter_param)
+
+        y_coord = row[y] + y_jitter
+
+        if likert_limits != []:
+            if y_coord < likert_limits[0]:
+                y_coord = likert_limits[0]
+            if y_coord > likert_limits[1]:
+                y_coord = likert_limits[1]
+
+        for index, x_value in enumerate(data[x].unique()):
+            if row[x] == x_value:
+                p.plot(index + x_jitter, y_coord, 'ro', color='navy', alpha=0.2)
+                p.plot(index, data[data[x] == x_value][y].mean(), "D", color="darkblue", markersize=9)
+
+    if midpoint_line != "":
+        p.axhline(midpoint_line, linestyle='--', color='navy', alpha=.5)
+
+    if output_path != "":
+        p.get_figure().savefig(output_path, bbox_inches="tight", dpi=600)
+
+def fancy_vboxplot(
+    x,
+    y,
+    data,
+    likert_limits=[],
+    midpoint_line='',
+    add_mean=True,
+    title="",
+    y_label="",
+    x_label="",
+    x_jitter_param=0.08,
+    y_jitter_param=0.1,
+    label_rotation=0,
+    size = 0.4,
+    aspect_ratio = [16, 9],
+    output_path="",
+):
+    """
+    Creates a vertical boxplot (cat on Y axis) with a jittered overlay for each datapoint.
+    Options for enforcing likert scale limits and for adding a diamond representing the mean.
+    """
+
+    plt.figure(figsize=aspect_ratio_locker(aspect_ratio, size), dpi = 600)
+
+    # defines the order
+    order = data.groupby(y)[x].mean().reset_index()
+    order.columns = [y, "agg" + x]
+
+    data = pd.merge(data, order, on=y)
+
+    data.sort_values("agg" + x, ascending=False, inplace=True)
+
+    # draws the basic plot
+    p = sns.boxplot(
+        x=x,
+        y=y,
+        data=data,
+        color="skyblue",
+        fliersize=0
+        )
+
+    p.spines["top"].set_visible(False)
+    p.spines["right"].set_visible(False)
+
+    p.set_xlabel(x_label)
+    p.set_ylabel(y_label)
+    p.set_title(title)
+
+    for tick in p.get_yticklabels():
+        tick.set_rotation(label_rotation)
+
+    for i, row in data.iterrows():
+        x_jitter = random.gauss(0,x_jitter_param)
+        y_jitter = random.gauss(0,y_jitter_param)
+
+        x_coord = row[x] + x_jitter
+
+        if likert_limits != []:
+            if x_coord < likert_limits[0]:
+                x_coord = likert_limits[0]
+            if x_coord > likert_limits[1]:
+                x_coord = likert_limits[1]
+
+        for index, y_value in enumerate(data[y].unique()):
+            if row[y] == y_value:
+                p.plot(x_coord, index + y_jitter, 'ro', color='navy', alpha=0.2)
+                p.plot(data[data[y] == y_value][x].mean(), index, "D", color="darkblue", markersize=9)
+
+    if midpoint_line != "":
+        p.axvline(midpoint_line, linestyle='--', color='navy', alpha=.5)
+
+    if output_path != "":
+        p.get_figure().savefig(output_path, bbox_inches="tight", dpi=600)
