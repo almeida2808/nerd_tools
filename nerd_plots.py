@@ -6,6 +6,16 @@ import statsmodels.stats.api as sms
 
 from matplotlib import pyplot as plt
 
+def load_qualtrics(path):
+    """
+    Loads data exported from Qualtrics as csv
+    """
+    df = pd.read_csv(path)
+    df.drop([0,1], inplace=True)
+    print(f"Dropping {len(df.query("Finished == '0'"))} unfinished responses...")
+    df.query("Finished == '1'", inplace=True)
+    return df
+
 def aspect_ratio_locker(aspect_ratio, multiplier):
     """
     Creates an easy tool to manipulate figure size inside a fixed aspect ratio
