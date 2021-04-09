@@ -41,6 +41,7 @@ def fancy_hboxplot(
     size = 0.4,
     aspect_ratio = [16, 9],
     output_path="",
+    **kwargs
 ):
     """
     Creates an horizontal boxplot (cat on X axis) with a jittered overlay for each datapoint.
@@ -63,7 +64,8 @@ def fancy_hboxplot(
         y=y,
         data=data,
         color="skyblue",
-        fliersize=0
+        fliersize=0,
+        **kwargs
         )
 
     p.spines["top"].set_visible(False)
@@ -116,6 +118,7 @@ def fancy_vboxplot(
     size = 0.4,
     aspect_ratio = [16, 9],
     output_path="",
+    **kwargs
 ):
     """
     Creates a vertical boxplot (cat on Y axis) with a jittered overlay for each datapoint.
@@ -138,7 +141,8 @@ def fancy_vboxplot(
         y=y,
         data=data,
         color="skyblue",
-        fliersize=0
+        fliersize=0,
+        **kwargs
         )
 
     p.spines["top"].set_visible(False)
@@ -186,6 +190,7 @@ def tiefighterplot(
     size = 0.4,
     aspect_ratio = [16, 9],
     output_path="",
+    **kwargs
 ):
     """
     Creates a vertical tiefighter plot (cat on Y axis) with a 95% CI as error bars.
@@ -203,7 +208,8 @@ def tiefighterplot(
         data=new_data,
         ci=None,
         linestyles="",
-        scale=0.5
+        scale=0.5,
+        **kwargs
         )
 
     p.set_title(title)
@@ -217,6 +223,28 @@ def tiefighterplot(
         p.axvline(x=midpoint_line, linestyle='--', alpha=.7)
 
     plt.errorbar(new_data['mean'], new_data['condition_name'], xerr=new_data['confint_error'], fmt='.', capsize=7)
+
+    if output_path != "":
+        p.get_figure().savefig(output_path, bbox_inches="tight", dpi=600)
+
+def histogram(series, title = "", x_label = "", y_label = "", kde=False, bins=7, size = 0.4, aspect_ratio = [16, 9], output_path="", **kwargs):
+    """
+    Plots an aesthetically pleasing histogram
+    """
+
+    plt.figure(figsize=aspect_ratio_locker(aspect_ratio, size), dpi = 600)
+
+    p = sns.distplot(series, kde=kde, bins=bins, **kwargs)
+
+    p.set_title(title)
+    p.set_xlabel(x_label)
+    p.set_ylabel(y_label)
+
+    p.spines["top"].set_visible(False)
+    p.spines["right"].set_visible(False)
+
+    p.get_figure().savefig("hist_rule_violation_lawyers_separate_under.png", dpi=600, bbox_inches="tight")
+
 
     if output_path != "":
         p.get_figure().savefig(output_path, bbox_inches="tight", dpi=600)
