@@ -12,7 +12,7 @@ def load_qualtrics(path):
     """
     df = pd.read_csv(path)
     df.drop([0,1], inplace=True)
-    print(f"Dropping {len(df.query("Finished == '0'"))} unfinished responses...")
+    print(f"Dropping {len(df[df['Finished'] == '0'])} unfinished responses...")
     df.query("Finished == '1'", inplace=True)
     return df
 
@@ -102,6 +102,8 @@ def fancy_hboxplot(
     if output_path != "":
         p.get_figure().savefig(output_path, bbox_inches="tight", dpi=600)
 
+    return p
+
 def fancy_vboxplot(
     x,
     y,
@@ -179,6 +181,9 @@ def fancy_vboxplot(
     if output_path != "":
         p.get_figure().savefig(output_path, bbox_inches="tight", dpi=600)
 
+    return p
+
+
 def tiefighterplot(
     x,
     y,
@@ -227,6 +232,9 @@ def tiefighterplot(
     if output_path != "":
         p.get_figure().savefig(output_path, bbox_inches="tight", dpi=600)
 
+    return p
+
+
 def histogram(series, title = "", x_label = "", y_label = "", kde=False, bins=7, size = 0.4, aspect_ratio = [16, 9], output_path="", **kwargs):
     """
     Plots an aesthetically pleasing histogram
@@ -248,3 +256,5 @@ def histogram(series, title = "", x_label = "", y_label = "", kde=False, bins=7,
 
     if output_path != "":
         p.get_figure().savefig(output_path, bbox_inches="tight", dpi=600)
+
+    return p
