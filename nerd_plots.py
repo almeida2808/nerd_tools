@@ -184,7 +184,7 @@ def fancy_vboxplot(
     return p
 
 
-def tiefighterplot(
+def vtiefighterplot(
     x,
     y,
     data,
@@ -195,6 +195,7 @@ def tiefighterplot(
     size = 0.4,
     aspect_ratio = [16, 9],
     output_path="",
+    margin=.5,
     **kwargs
 ):
     """
@@ -204,7 +205,7 @@ def tiefighterplot(
     plt.figure(figsize=aspect_ratio_locker(aspect_ratio, size), dpi = 600)
 
     new_data = data.groupby(y)[x].agg(['mean', 'size', confint_error]).reset_index()
-    new_data["condition_name"] = new_data.apply(lambda x: x[y] + " (n = " + str(x["size"]) + ")", axis=1)
+    new_data["condition_name"] = new_data.apply(lambda x: x[y] + "\n(n = " + str(x["size"]) + ")", axis=1)
     new_data.sort_values("mean", ascending=False, inplace=True)
 
     p = sns.pointplot(
@@ -224,8 +225,10 @@ def tiefighterplot(
     p.spines["top"].set_visible(False)
     p.spines["right"].set_visible(False)
 
+    p.margins(y=margin)
+
     if midpoint_line != '':
-        p.axvline(x=midpoint_line, linestyle='--', alpha=.7)
+        p.axvline(midpoint_line, linestyle='--', alpha=.7)
 
     plt.errorbar(new_data['mean'], new_data['condition_name'], xerr=new_data['confint_error'], fmt='.', capsize=7)
 
@@ -234,6 +237,58 @@ def tiefighterplot(
 
     return p
 
+def htiefighterplot(
+    x,
+    y,
+    data,
+    midpoint_line='',
+    title="",
+    y_label="",
+    x_label="",
+    size = 0.4,
+    aspect_ratio = [16, 9],
+    output_path="",
+    margin=.5,
+    **kwargs
+):
+    """
+    Creates a vertical tiefighter plot (cat on Y axis) with a 95% CI as error bars.
+    """
+
+    plt.figure(figsize=aspect_ratio_locker(aspect_ratio, size), dpi = 600)
+
+    new_data = data.groupby(x)[y].agg(['mean', 'size', confint_error]).reset_index()
+    new_data["condition_name"] = new_data.apply(lambda df: df[x] + "\n(n = " + str(df["size"]) + ")", axis=1)
+    new_data.sort_values("mean", ascending=False, inplace=True)
+
+    p = sns.pointplot(
+        x="condition_name",
+        y="mean",
+        data=new_data,
+        ci=None,
+        linestyles="",
+        scale=0.5,
+        **kwargs
+        )
+
+    p.set_title(title)
+    p.set_ylabel(y_label)
+    p.set_xlabel(x_label)
+
+    p.spines["top"].set_visible(False)
+    p.spines["right"].set_visible(False)
+
+    p.margins(x=margin)
+
+    if midpoint_line != '':
+        p.axhline(midpoint_line, linestyle='--', alpha=.7)
+
+    plt.errorbar(new_data['condition_name'], new_data['mean'], yerr=new_data['confint_error'], fmt='.', capsize=7)
+
+    if output_path != "":
+        p.get_figure().savefig(output_path, bbox_inches="tight", dpi=600)
+
+    return p
 
 def histogram(series, title = "", x_label = "", y_label = "", kde=False, bins=7, size = 0.4, aspect_ratio = [16, 9], output_path="", **kwargs):
     """
