@@ -196,6 +196,8 @@ def vtiefighterplot(
     aspect_ratio = [16, 9],
     output_path="",
     margin=.5,
+    new_line="",
+    sort_values=True,
     **kwargs
 ):
     """
@@ -205,8 +207,10 @@ def vtiefighterplot(
     plt.figure(figsize=aspect_ratio_locker(aspect_ratio, size), dpi = 600)
 
     new_data = data.groupby(y)[x].agg(['mean', 'size', confint_error]).reset_index()
-    new_data["condition_name"] = new_data.apply(lambda x: x[y] + "\n(n = " + str(x["size"]) + ")", axis=1)
-    new_data.sort_values("mean", ascending=False, inplace=True)
+    new_data["condition_name"] = new_data.apply(lambda x: x[y] + new_line + "(n = " + str(x["size"]) + ")", axis=1)
+
+    if sort_values == True:
+        new_data.sort_values("mean", ascending=False, inplace=True)
 
     p = sns.pointplot(
         x="mean",
@@ -249,6 +253,8 @@ def htiefighterplot(
     aspect_ratio = [16, 9],
     output_path="",
     margin=.5,
+    new_line="",
+    sort_values=True,
     **kwargs
 ):
     """
@@ -258,8 +264,9 @@ def htiefighterplot(
     plt.figure(figsize=aspect_ratio_locker(aspect_ratio, size), dpi = 600)
 
     new_data = data.groupby(x)[y].agg(['mean', 'size', confint_error]).reset_index()
-    new_data["condition_name"] = new_data.apply(lambda df: df[x] + "\n(n = " + str(df["size"]) + ")", axis=1)
-    new_data.sort_values("mean", ascending=False, inplace=True)
+    new_data["condition_name"] = new_data.apply(lambda df: df[x] + new_line + "(n = " + str(df["size"]) + ")", axis=1)
+    if sort_values == True:
+        new_data.sort_values("mean", ascending=False, inplace=True)
 
     p = sns.pointplot(
         x="condition_name",
