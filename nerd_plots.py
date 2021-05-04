@@ -39,8 +39,10 @@ def fancy_hboxplot(
     y_jitter_param=0.08,
     label_rotation=90,
     size = 0.4,
+    alpha=0.2,
     aspect_ratio = [16, 9],
     output_path="",
+    sort_values = True,
     **kwargs
 ):
     """
@@ -56,7 +58,8 @@ def fancy_hboxplot(
 
     data = pd.merge(data, order, on=x)
 
-    data.sort_values("agg" + y, ascending=False, inplace=True)
+    if sort_values == True:
+        data.sort_values("agg" + y, ascending=False, inplace=True)
 
     # draws the basic plot
     p = sns.boxplot(
@@ -93,7 +96,7 @@ def fancy_hboxplot(
         for index, x_value in enumerate(data[x].unique()):
             if row[x] == x_value:
                 if add_mean == True:
-                    p.plot(index + x_jitter, y_coord, 'ro', color='navy', alpha=0.2)
+                    p.plot(index + x_jitter, y_coord, 'ro', color='navy', alpha=alpha)
                 p.plot(index, data[data[x] == x_value][y].mean(), "D", color="darkblue", markersize=9)
 
     if midpoint_line != "":
@@ -118,8 +121,10 @@ def fancy_vboxplot(
     y_jitter_param=0.1,
     label_rotation=0,
     size = 0.4,
+    alpha=0.2,
     aspect_ratio = [16, 9],
     output_path="",
+    sort_values = True,
     **kwargs
 ):
     """
@@ -135,7 +140,8 @@ def fancy_vboxplot(
 
     data = pd.merge(data, order, on=y)
 
-    data.sort_values("agg" + x, ascending=False, inplace=True)
+    if sort_values == True:
+        data.sort_values("agg" + x, ascending=False, inplace=True)
 
     # draws the basic plot
     p = sns.boxplot(
@@ -172,7 +178,7 @@ def fancy_vboxplot(
         for index, y_value in enumerate(data[y].unique()):
             if row[y] == y_value:
                 if add_mean == True:
-                    p.plot(x_coord, index + y_jitter, 'ro', color='navy', alpha=0.2)
+                    p.plot(x_coord, index + y_jitter, 'ro', color='navy', alpha=alpha)
                 p.plot(data[data[y] == y_value][x].mean(), index, "D", color="darkblue", markersize=9)
 
     if midpoint_line != "":
