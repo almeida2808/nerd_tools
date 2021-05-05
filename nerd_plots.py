@@ -95,9 +95,9 @@ def fancy_hboxplot(
 
         for index, x_value in enumerate(data[x].unique()):
             if row[x] == x_value:
+                p.plot(index + x_jitter, y_coord, 'ro', color='navy', alpha=alpha)
                 if add_mean == True:
-                    p.plot(index + x_jitter, y_coord, 'ro', color='navy', alpha=alpha)
-                p.plot(index, data[data[x] == x_value][y].mean(), "D", color="darkblue", markersize=9)
+                    p.plot(index, data[data[x] == x_value][y].mean(), "D", color="darkblue", markersize=9)
 
     if midpoint_line != "":
         p.axhline(midpoint_line, linestyle='--', color='navy', alpha=.5)
@@ -177,9 +177,9 @@ def fancy_vboxplot(
 
         for index, y_value in enumerate(data[y].unique()):
             if row[y] == y_value:
-                if add_mean == True:
-                    p.plot(x_coord, index + y_jitter, 'ro', color='navy', alpha=alpha)
-                p.plot(data[data[y] == y_value][x].mean(), index, "D", color="darkblue", markersize=9)
+                p.plot(x_coord, index + y_jitter, 'ro', color='navy', alpha=alpha)
+                if add_mean == True:                
+                    p.plot(data[data[y] == y_value][x].mean(), index, "D", color="darkblue", markersize=9)
 
     if midpoint_line != "":
         p.axvline(midpoint_line, linestyle='--', color='navy', alpha=.5)
