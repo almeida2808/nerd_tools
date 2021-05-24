@@ -310,7 +310,7 @@ def histogram(series, title = "", x_label = "", y_label = "", kde=False, bins=7,
 
     plt.figure(figsize=aspect_ratio_locker(aspect_ratio, size), dpi = 600)
 
-    p = sns.distplot(series, kde=kde, bins=bins, **kwargs)
+    p = sns.histplot(series, kde=kde, bins=bins, **kwargs)
 
     p.set_title(title)
     p.set_xlabel(x_label)
