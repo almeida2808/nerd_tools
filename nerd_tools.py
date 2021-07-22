@@ -38,7 +38,7 @@ def fancy_hboxplot(
     x_jitter_param=0.1,
     y_jitter_param=0.08,
     label_rotation=90,
-    size = 0.4,
+    size=0.4,
     alpha=0.2,
     aspect_ratio = [16, 9],
     output_path="",
@@ -120,9 +120,9 @@ def fancy_vboxplot(
     x_jitter_param=0.08,
     y_jitter_param=0.1,
     label_rotation=0,
-    size = 0.4,
+    size=0.4,
     alpha=0.2,
-    aspect_ratio = [16, 9],
+    aspect_ratio=[16, 9],
     output_path="",
     sort_values = True,
     **kwargs
@@ -204,6 +204,7 @@ def vtiefighterplot(
     margin=.5,
     new_line="",
     sort_values=True,
+    add_n=True,
     **kwargs
 ):
     """
@@ -213,7 +214,11 @@ def vtiefighterplot(
     plt.figure(figsize=aspect_ratio_locker(aspect_ratio, size), dpi = 600)
 
     new_data = data.groupby(y)[x].agg(['mean', 'size', confint_error]).reset_index()
-    new_data["condition_name"] = new_data.apply(lambda x: x[y] + new_line + "(n = " + str(x["size"]) + ")", axis=1)
+
+    if add_n == True:
+        new_data["condition_name"] = new_data.apply(lambda x: x[y] + new_line + "(n = " + str(x["size"]) + ")", axis=1)
+    else:
+        new_data["condition_name"] = new_data[y]
 
     if sort_values == True:
         new_data.sort_values("mean", ascending=False, inplace=True)
@@ -261,6 +266,7 @@ def htiefighterplot(
     margin=.5,
     new_line="",
     sort_values=True,
+    add_n=True,
     **kwargs
 ):
     """
@@ -270,7 +276,12 @@ def htiefighterplot(
     plt.figure(figsize=aspect_ratio_locker(aspect_ratio, size), dpi = 600)
 
     new_data = data.groupby(x)[y].agg(['mean', 'size', confint_error]).reset_index()
-    new_data["condition_name"] = new_data.apply(lambda df: df[x] + new_line + "(n = " + str(df["size"]) + ")", axis=1)
+
+    if add_n == True:
+        new_data["condition_name"] = new_data.apply(lambda x: x[y] + new_line + "(n = " + str(x["size"]) + ")", axis=1)
+    else:
+        new_data["condition_name"] = new_data[y]
+
     if sort_values == True:
         new_data.sort_values("mean", ascending=False, inplace=True)
 
