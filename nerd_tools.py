@@ -337,3 +337,68 @@ def histogram(series, title = "", x_label = "", y_label = "", kde=False, bins=7,
         p.get_figure().savefig(output_path, bbox_inches="tight", dpi=600)
 
     return p
+
+def hist_ridge(
+    columns,
+    rows,
+    filtering_variable,
+    data,
+    xtick_labels=[],
+    row_labels=True,
+    row_label_rotation=90,
+    aspect_ratio=[16, 32],
+    size=0.4,
+    output_path="",
+    **kwargs
+):
+    """
+    Creates a ridge plot of histograms with len(columns) columns and len(rows) rows.
+    Every item in columns must be a level of a factor picked up by filtering_variable.
+    """
+
+    if len(xtick_labels) > 0 and type(xtick_labels[0]) == list:
+        fig, axes = plt.subplots(nrows=len(rows), ncols=len(columns), figsize=nt.aspect_ratio_locker(aspect_ratio, size))
+    else:
+        fig, axes = plt.subplots(nrows=len(rows), ncols=len(columns), sharex="col", figsize=nt.aspect_ratio_locker(aspect_ratio, size))
+    
+    for i_c, c in enumerate(columns):
+        for i_v, v in enumerate(rows):
+            q = sns.histplot(
+                data[data[filtering_variable] == c][v],
+                ax=axes[i_v,i_c],
+                kde=False,
+                **kwargs
+            )
+            
+            q.set_title('')
+            q.set_xlabel('')
+            q.set_ylabel('')
+            q.spines["top"].set_visible(False)
+            q.spines["right"].set_visible(False)
+    
+    #gets the labels right for the x axis if supplied
+    if len(xtick_labels) > 0:
+        #checks whether xtick_labels is a list of lists, or if it's a list of labels
+        if type(xtick_labels[0]) != list:
+            for i_c, _ in enumerate(columns):
+                axes[i_v, i_c].set_xticks([i for i in range(1, len(xtick_labels)+1)])
+                axes[i_v, i_c].set_xticklabels(xtick_labels)
+        else: #in that case, the function expects 1 list per row.
+            for i_c, c in enumerate(columns):
+                for i_v, v in enumerate(rows):
+                    axes[i_v, i_c].set_xticks([i for i in range(1, len(xtick_labels[i_v])+1)])
+                    axes[i_v, i_c].set_xticklabels(xtick_labels[i_v])
+                    
+    for ax, col in zip(axes[0], columns):
+        ax.set_title(col)
+
+    if row_labels == True:
+        for ax, row in zip(axes[:,0], rows):
+            ax.set_ylabel(row, rotation=row_label_rotation, size='medium')
+        
+    fig.tight_layout()
+        
+    if output_path != "":
+        fig.savefig(output_path, bbox_inches="tight", dpi=600)
+        
+    return fig
