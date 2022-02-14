@@ -330,9 +330,6 @@ def histogram(series, title = "", x_label = "", y_label = "", kde=False, bins=7,
     p.spines["top"].set_visible(False)
     p.spines["right"].set_visible(False)
 
-    p.get_figure().savefig("hist_rule_violation_lawyers_separate_under.png", dpi=600, bbox_inches="tight")
-
-
     if output_path != "":
         p.get_figure().savefig(output_path, bbox_inches="tight", dpi=600)
 
