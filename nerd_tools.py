@@ -355,9 +355,9 @@ def hist_ridge(
     """
 
     if len(xtick_labels) > 0 and type(xtick_labels[0]) == list:
-        fig, axes = plt.subplots(nrows=len(rows), ncols=len(columns), figsize=nt.aspect_ratio_locker(aspect_ratio, size))
+        fig, axes = plt.subplots(nrows=len(rows), ncols=len(columns), figsize=aspect_ratio_locker(aspect_ratio, size))
     else:
-        fig, axes = plt.subplots(nrows=len(rows), ncols=len(columns), sharex="col", figsize=nt.aspect_ratio_locker(aspect_ratio, size))
+        fig, axes = plt.subplots(nrows=len(rows), ncols=len(columns), sharex="col", figsize=aspect_ratio_locker(aspect_ratio, size))
     
     for i_c, c in enumerate(columns):
         for i_v, v in enumerate(rows):
