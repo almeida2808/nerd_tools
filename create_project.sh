@@ -12,7 +12,7 @@ if [ "$#" -eq  "0" ]; then
     echo "Projeto vazio criado"
 else
     if [ "$1" == "Python" ]; then
-        cp ./nerd_tools/templates/Python.ipynb "$2"
+        cp ~/nerd_tools/templates/Python.ipynb "$2"
     fi
     if [ "$3" == "start" ]; then
         jupyter notebook
